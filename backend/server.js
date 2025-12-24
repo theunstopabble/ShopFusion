@@ -34,15 +34,21 @@ app.use("/uploads", express.static(path.join(__dirname_resolved, "/uploads")));
 
 // --- PRODUCTION DEPLOYMENT LOGIC ---
 if (process.env.NODE_ENV === "production") {
-  // Frontend build folder ko static serve karein
-  app.use(express.static(path.join(__dirname_resolved, "/frontend/build")));
+  const buildPath = path.join(__dirname_resolved, "/frontend/build");
 
-  // Express 5 named wildcard parameter (FIXED)
-  app.get("/:path*", (req, res) =>
-    res.sendFile(
-      path.resolve(__dirname_resolved, "frontend", "build", "index.html")
-    )
-  );
+  // 1. Static files serve karein
+  app.use(express.static(buildPath));
+
+  // 2. Universal Middleware: Catch-all for any other request
+  // Isme koi string path nahi hai, isliye PathError nahi aayega
+  app.use((req, res, next) => {
+    // Agar request API ki nahi hai, toh index.html bhejien
+    if (!req.path.startsWith("/api")) {
+      res.sendFile(path.join(buildPath, "index.html"));
+    } else {
+      next();
+    }
+  });
 } else {
   app.get("/", (req, res) => {
     res.send("ShopFusion API is running perfectly...");
