@@ -1,3 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* --- SHOPFUSION GRAND LEVEL STYLING --- */
+
+/* Glassmorphism Navbar */
+.navbar {
+  background: rgba(15, 23, 42, 0.7) !important; /* Semi-transparent background */
+  backdrop-filter: blur(12px) !important; /* Glass blur effect */
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  position: sticky !important;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Grand Hover Pop Effect for Cards and Groups */
+.group {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease !important;
+}
+
+.group:hover {
+  transform: translateY(-12px) scale(1.02) !important; /* Pop up and slight scale */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Glow Effect on Hover */
+.group:hover img {
+  filter: brightness(1.1);
+}
+body {
+  overflow-x: hidden; /* Side scrolling ko rokne ke liye */
+  background-color: #0f172a;
+}
+h2 span {
+  opacity: 0.9;
+}
