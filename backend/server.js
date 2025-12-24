@@ -37,8 +37,8 @@ if (process.env.NODE_ENV === "production") {
   // Frontend build folder ko static serve karein
   app.use(express.static(path.join(__dirname_resolved, "/frontend/build")));
 
-  // Express 5 Compatibility: Use (.*) instead of *
-  app.get("(.*)", (req, res) =>
+  // Express 5 named wildcard parameter (FIXED)
+  app.get("/:path*", (req, res) =>
     res.sendFile(
       path.resolve(__dirname_resolved, "frontend", "build", "index.html")
     )
