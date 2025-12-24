@@ -1,41 +1,29 @@
-const path = require("path");
 const express = require("express");
 const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, "uploads/"); // Files yahan save hongi
-  },
-  filename(req, file, cb) {
-    cb(
-      null,
-      `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
-    );
+// Cloudinary Storage Engine Setup
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "ShopFusion_Products", // Cloudinary mein is naam ka folder ban jayega
+    allowed_formats: ["jpg", "jpeg", "png"],
+    transformation: [{ width: 500, height: 500, crop: "limit" }], // Auto-resize for grand performance
   },
 });
 
-function checkFileType(file, cb) {
-  const filetypes = /jpg|jpeg|png/;
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = filetypes.test(file.mimetype);
+const upload = multer({ storage });
 
-  if (extname && mimetype) {
-    return cb(null, true);
-  } else {
-    cb("Images only!");
-  }
-}
-
-const upload = multer({
-  storage,
-  fileFilter: function (req, file, cb) {
-    checkFileType(file, cb);
-  },
-});
-
+// Image upload route
 router.post("/", upload.single("image"), (req, res) => {
-  res.send(`/${req.file.path}`);
+  if (req.file && req.file.path) {
+    // req.file.path ab local address nahi balki Cloudinary ka URL hoga
+    res.send(req.file.path);
+  } else {
+    res.status(400).send({ message: "No image uploaded" });
+  }
 });
 
 module.exports = router;

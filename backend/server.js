@@ -2,6 +2,7 @@ const path = require("path");
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const cloudinary = require("cloudinary").v2; // Cloudinary Import
 const connectDB = require("./config/db");
 
 // Routes Import
@@ -12,6 +13,13 @@ const uploadRoutes = require("./routes/uploadRoutes");
 
 dotenv.config();
 connectDB();
+
+// Cloudinary Configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const app = express();
 
@@ -36,13 +44,9 @@ app.use("/uploads", express.static(path.join(__dirname_resolved, "/uploads")));
 if (process.env.NODE_ENV === "production") {
   const buildPath = path.join(__dirname_resolved, "/frontend/build");
 
-  // 1. Static files serve karein
   app.use(express.static(buildPath));
 
-  // 2. Universal Middleware: Catch-all for any other request
-  // Isme koi string path nahi hai, isliye PathError nahi aayega
   app.use((req, res, next) => {
-    // Agar request API ki nahi hai, toh index.html bhejien
     if (!req.path.startsWith("/api")) {
       res.sendFile(path.join(buildPath, "index.html"));
     } else {
